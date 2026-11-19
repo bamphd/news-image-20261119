@@ -498,6 +498,10 @@ def draw_page(Image, ImageDraw, ImageFont):
     paint_footer(pg)
     os.makedirs(os.path.dirname(DEST), exist_ok=True)
     canvas.save(DEST, format="PNG", optimize=True)
+    # Guard: never ship a wrong-sized image — fail loudly instead of
+    # silently writing a bad file (the fallback copy stays byte-identical).
+    with Image.open(DEST) as shot:
+        assert shot.size == (SIDE, SIDE), shot.size
     print("wrote", DEST, canvas.size)
 
 
